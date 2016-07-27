@@ -21,9 +21,7 @@ namespace Violet
         public void Bind(HttpMethods method, string path, RequestHandlerDelegate handler)
         {
             var matchRegular = "^" + Regex.Replace(path, @":\w+", @"([^\/]+?)") + "$";
-
             var paramsName = new Dictionary<string, int>();
-
             var pathNodes = path.Split('/');
 
             for (var i = 0; i < pathNodes.Length; i++)
@@ -53,8 +51,10 @@ namespace Violet
             {
                 if (!Regex.Match(path, router.MatchRegular).Success) continue;
 
-                var pathNodes = path.Split('/');
+                if (!string.Equals(context.Request.Method, router.Method.ToString(), 
+                        StringComparison.CurrentCultureIgnoreCase)) continue;
 
+                var pathNodes = path.Split('/');
                 foreach (var node in router.Params)
                 {
                     context.Param.Add(node.Key, pathNodes[node.Value]);
